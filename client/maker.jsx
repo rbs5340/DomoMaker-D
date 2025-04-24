@@ -4,6 +4,7 @@ const {useState,useEffect} = React;
 const { createRoot } = require('react-dom/client');
 
 const handleDomo = (e,onDomoAdded)=>{
+    //console.log("handledomo");
     e.preventDefault();
     helper.hideError();
 
@@ -16,6 +17,27 @@ const handleDomo = (e,onDomoAdded)=>{
     }
 
     helper.sendPost(e.target.action,{name,age},onDomoAdded);
+    return false;
+};
+
+const handleDomoInc = (e,props) =>{
+    e.preventDefault();
+    helper.hideError();
+    const [domos,setDomos]=useState(props.domos);
+
+    useEffect(()=>{
+        const loadDomosFromServer = async () => {
+            const response = await fetch('/getDomos');
+            const data = await response.json();
+            setDomos(data.domos);
+        };
+        loadDomosFromServer();
+    }, [props.reloadDomos]);
+
+    for(let i=0;i<domos.length;i++){
+        domos[i].points++;
+    }
+
     return false;
 };
 
@@ -34,6 +56,15 @@ const DomoForm=(props)=>{
             <input id="domoAge" type="number" min="0" name="age" />
             <input className="makeDomoSubmit" type="submit" value="Make Domo" />
         </form>
+        /*<button id="domoInc"
+            onClick={(e)=>handleDomoInc(e,props.triggerReload)}
+            name="domoInc"
+            action="/maker"
+            method="GET"
+            className="domoInc"
+            value="Make Domo"
+        >Increment Domo</button>
+        */
     );
 }
 
@@ -63,6 +94,7 @@ const DomoList = (props) => {
                 <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
                 <h3 className="domoName">Name: {domo.name}</h3>
                 <h3 className="domoAge">Age: {domo.age}</h3>
+                <h3 className="domoPoints">Points: {domo.points}</h3>
             </div>
         );
     });

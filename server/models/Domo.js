@@ -15,6 +15,10 @@ const DomoSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  points: {
+    type: Number,
+    default: 0,
+  },
   owner: {
     type: mongoose.Schema.ObjectId,
     required: true,
