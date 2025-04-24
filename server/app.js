@@ -11,7 +11,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis').default;
 const redis = require('redis');
 
-// const { error } = require('console');
+const { error } = require('console');
 const router = require('./router.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
