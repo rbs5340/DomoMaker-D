@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const models = require('../models');
 
 const { Domo } = models;
@@ -5,7 +6,7 @@ const { Domo } = models;
 const makerPage = async (req, res) => res.render('app');
 
 const makeDomo = async (req, res) => {
-  //console.log("makedomo");
+  // console.log("makedomo");
   if (!req.body.name || !req.body.age) {
     return res.status(400).json({ error: 'Both name and age are required!' });
   }
@@ -41,8 +42,25 @@ const getDomos = async (req, res) => {
   }
 };
 
+const modDomo = async (req, res) => {
+  const user = mongoose.Types.ObjectId.createFromHexString(req.session.account._id);
+  console.log(`User: ${user}`);
+  try {
+    await Domo.updateMany(
+      { owner: user },
+      { $inc: { points: 1 } },
+    );
+    makerPage(req, res);
+    return false;
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+};
+
 module.exports = {
   makerPage,
   makeDomo,
   getDomos,
+  modDomo,
 };

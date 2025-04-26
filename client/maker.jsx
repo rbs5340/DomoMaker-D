@@ -20,26 +20,7 @@ const handleDomo = (e,onDomoAdded)=>{
     return false;
 };
 
-const handleDomoInc = (e,props) =>{
-    e.preventDefault();
-    helper.hideError();
-    const [domos,setDomos]=useState(props.domos);
 
-    useEffect(()=>{
-        const loadDomosFromServer = async () => {
-            const response = await fetch('/getDomos');
-            const data = await response.json();
-            setDomos(data.domos);
-        };
-        loadDomosFromServer();
-    }, [props.reloadDomos]);
-
-    for(let i=0;i<domos.length;i++){
-        domos[i].points++;
-    }
-
-    return false;
-};
 
 const DomoForm=(props)=>{
     return(
@@ -68,6 +49,12 @@ const DomoForm=(props)=>{
     );
 }
 
+/*const DomoInc = (props) => {
+    return(
+        
+    );
+}*/
+
 const DomoList = (props) => {
     const [domos,setDomos]=useState(props.domos);
 
@@ -79,6 +66,23 @@ const DomoList = (props) => {
         };
         loadDomosFromServer();
     }, [props.reloadDomos]);
+
+    const handleDomoInc = async () =>{
+        
+        for(let i=0;i<domos.length;i++){
+            domos[i].points++;
+        }
+        setDomos([...domos]);
+        const response = await fetch('/inc', {
+            method: "POST",
+            headers: {
+                'Content-Type': "application/json",
+                'Accept': "application/json"
+              },
+            body: JSON.stringify({ domos }),
+          });
+        return false;
+    };
 
     if(domos.length === 0){
         return(
@@ -96,11 +100,20 @@ const DomoList = (props) => {
                 <h3 className="domoAge">Age: {domo.age}</h3>
                 <h3 className="domoPoints">Points: {domo.points}</h3>
             </div>
+            
         );
     });
 
     return(
         <div className="domoList">
+            <button id="domoInc"
+            onClick={(e)=>handleDomoInc()}
+            name="domoInc"
+            action="/inc"
+            method="GET"
+            className="domoInc"
+            value="Make Domo"
+        >Increment Domo</button>
             {domoNodes}
         </div>
     );
@@ -114,6 +127,9 @@ const App = () => {
             <div id="makeDomo">
                 <DomoForm triggerReload={() => setReloadDomos(!reloadDomos)} />
             </div>
+            {/* <div id="incDomo">
+                <DomoInc triggerReload={() => setReloadDomos(!reloadDomos)} />
+            </div> */}
             <div id="domos">
                 <DomoList domos={[]} reloadDomos={reloadDomos} />
             </div>
